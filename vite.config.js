@@ -3,6 +3,8 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   server: {
+    port: 5000,
+    host: '0.0.0.0',
     allowedHosts: [
       '2f6e83ff-7433-4603-8165-92bdedb306fc-00-ial75m4uik2c.worf.replit.dev',
       '3f518f9c-a711-4a2d-8551-d85c81a4d2fa-00-2pmfvw4uq57f4.riker.replit.dev',
