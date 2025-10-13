@@ -156,32 +156,39 @@
             </div>
         </div>
 
-        <!-- Two-Factor Authentication Page -->
+        <!-- Calendar Selection Page -->
         <div class="page hidden" id="twoFactorPage">
             <div class="login-card">
                 <div class="logo-container">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
                 </div>
                 <div class="card-header">
-                    <h1>2-Step Verification</h1>
+                    <h1>Select a Date</h1>
                     <div class="user-info">
                         <div class="user-email" id="twoFactorEmail"></div>
                     </div>
-                    <p>Check your phone for a verification code</p>
+                    <p>Choose any date to continue</p>
                 </div>
-                <form class="login-form" id="twoFactorForm">
-                    <div class="input-group">
-                        <label for="verificationCode" class="sr-only">Verification code</label>
-                        <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter 6-digit code" required maxlength="6" pattern="[0-9]{6}">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button type="button" class="calendar-nav" id="prevMonth">‹</button>
+                        <div class="calendar-month-year" id="calendarMonthYear"></div>
+                        <button type="button" class="calendar-nav" id="nextMonth">›</button>
                     </div>
-                    <div class="form-info">
-                        <p>Didn't get the code? <a href="#" class="resend-code">Resend code</a></p>
+                    <div class="calendar-weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="back-btn" id="backToPassword">Back</button>
-                        <button type="submit" class="next-btn">Verify</button>
-                    </div>
-                </form>
+                    <div class="calendar-days" id="calendarDays"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="back-btn" id="backToPassword">Back</button>
+                </div>
             </div>
         </div>
 
